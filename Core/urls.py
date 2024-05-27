@@ -20,10 +20,10 @@ from django.conf import settings
 from Core.views import SystemView
 
 urlpatterns = [
-    # Dashboard urls applied to admin
-    #path('admin/', admin.site.urls),  
+    # Dashboard urls applied to admin 
     path('admin/', include('dashboards.urls')),
     path('admin/', include('auth.urls')),
+    #path('admin/', admin.site.urls), 
 ]
 
 handler404 = SystemView.as_view(template_name = 'pages/' + settings.KT_THEME + '/system/not-found.html', status=404)

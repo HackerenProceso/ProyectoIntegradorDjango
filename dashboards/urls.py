@@ -3,6 +3,8 @@ from django.conf import settings
 from dashboards.views import DashboardsView
 from dashboards import views as d_views
 from . import views
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group, User
 
 app_name = 'dashboards'
 
@@ -12,10 +14,16 @@ urlpatterns = [
     
     #User
     path('profile/', d_views.UserProfileView.as_view(), name='user_profile'),
+    path('change-password/', d_views.UserChangePasswordView.as_view(), name='change_password'),
     
-    path('groups/', views.groups, name='groups'),
-    path('users/', views.users, name='users'),
-    path('admin/', include('django.contrib.admin.urls')),  # Incluye las vistas de administración de Django
-]
+    #Admin models Auth
+    path('auth/<str:model_name>/', d_views.CustomModelListView.as_view(), name='auth_view'),
+    path('auth/<str:model_name>/add/', d_views.AuthAddModelView.as_view(), name='auth_add_model'),
+    path('auth/<str:model_name>/edit/<int:id>/', d_views.AuthEditModelView.as_view(), name='auth_edit_model'),
+    
+    #Admin models Dashboards
+    path('dashboard/<str:model_name>/', d_views.CustomModelsView.as_view(), name='model_view'),
+    path('dashboard/<str:model_name>/add/', d_views.AddModelView.as_view(), name='add_model'),
+    path('dashboard/<str:model_name>/edit/<int:id>/', d_views.EditModelView.as_view(), name='edit_model'),
 
-#<a href="{% url 'dashboards:index' %}">
+]

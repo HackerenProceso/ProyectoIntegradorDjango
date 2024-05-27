@@ -3,28 +3,29 @@
 {% block title %}System Error{% endblock %}
 
 {% block content %}
+{% load static%}
 
 <!--begin::Page bg image-->
 <style>
     body {
-        background-image: url('{% static 'media/auth/bg7.jpg' %}');
+        background-image: url("{% static 'media/auth/bg7.jpg' %}");
     }
 
     [data-bs-theme="dark"] body {
-        background-image: url('{% static 'media/auth/bg7-dark.jpg' %}');
+        background-image: url("{% static 'media/auth/bg7-dark.jpg' %}");
     }
 </style>
 <!--end::Page bg image-->
 
 <!--begin::Title-->
 <h1 class="fw-bolder fs-2qx text-gray-900 mb-4">
-    System Error
+    Error del sistema
 </h1>
 <!--end::Title--> 
 
 <!--begin::Text-->
 <div class="fw-semibold fs-6 text-gray-500 mb-7">
-    Something went wrong! Please try again later.
+    ¡Algo salió mal! Por favor, inténtelo de nuevo más tarde.
 </div>
 <!--end::Text--> 
 
@@ -37,7 +38,7 @@
 
 <!--begin::Link-->
 <div class="mb-0">
-    <a href="/" class="btn btn-sm btn-primary">Return Home</a>
+    <a href="/admin" class="btn btn-sm btn-primary">Volver a Inicio</a>
 </div>    
 <!--end::Link-->
 

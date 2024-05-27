@@ -1,0 +1,13 @@
+{% extends layout %}
+
+{% block content %}
+<div class="container">
+    <h1>Editar {{ model_name }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{% url 'dashboards:auth_view' model_name=model_name %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends layout %}
+
+{% block content %}
+<div class="container">
+    <h1>Tabla de {{ model_name }}</h1>
+
+    <div class="text-right mb-3 d-flex justify-content-between">
+        {% if model_name %}
+            <form action="{% url 'dashboards:auth_view' model_name=model_name %}" method="post" id="delete-all-form">
+                {% csrf_token %}
+                <!--<button type="submit" name="delete_all" class="btn btn-danger">Eliminar todos</button>-->
+            </form>
+            <form action="{% url 'dashboards:auth_add_model' model_name=model_name %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Agregar</button>
+            </form>
+        {% else %}
+            <p>No se ha proporcionado un nombre de modelo válido.</p>
+        {% endif %}
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Is Superuser</th>
+                <th>Username</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Is Staff</th>
+                <th>Is Active</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in model_objects %}
+                <tr>
+                    <td>{{ obj.is_superuser }}</td>
+                    <td><a href="{% url 'dashboards:auth_edit_model' model_name=model_name id=obj.id %}">{{ obj.username }}</a></td>
+                    <td>{{ obj.first_name }}</td>
+                    <td>{{ obj.last_name }}</td>
+                    <td>{{ obj.email }}</td>
+                    <td>{{ obj.is_staff }}</td>
+                    <td>{{ obj.is_active }}</td>
+                    <td>
+                        <form action="{% url 'dashboards:auth_view' model_name=model_name %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="delete_item_id" value="{{ obj.id }}">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="8">No hay datos disponibles</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

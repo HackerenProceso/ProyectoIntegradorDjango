@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from pprint import pprint
 from Core.__init__ import KTLayout
 from Core.libs.theme import KTTheme
+from django.contrib.admin import site
 
 class SystemView(TemplateView):
     template_name = 'pages/system/not-found.html'

@@ -1,0 +1,41 @@
+<!-- addModel.html -->
+{% extends layout %}
+
+{% block content %}
+<div class="container">
+    <h1>Agregar a {{ model_name }}</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div id="image-preview" class="mb-5"></div>
+        <button type="submit" class="btn btn-primary">Agregar Campo</button>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('imagen-input');
+    const preview = document.getElementById('image-preview');
+
+    input.addEventListener('change', function() {
+        while (preview.firstChild) {
+            preview.removeChild(preview.firstChild);
+        }
+
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.classList.add('img-thumbnail');
+                img.style.width = '200px';
+                img.style.height = '200px';
+                preview.appendChild(img);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -34,13 +34,19 @@
 	<!--end::Menu separator-->
 	<!--begin::Menu item-->
 	<div class="menu-item px-5">
-		<a href="{% url 'dashboards:user_profile' %}" class="menu-link px-5">My Profile</a>
+		<a href="{% url 'dashboards:user_profile' %}" class="menu-link px-5">Mi Perfil</a>
 	</div>
 	<!--end::Menu item-->
 
 	<!--begin::Menu item-->
 	<div class="menu-item px-5">
-		<a href="{% url 'auth:logout' %}" class="menu-link px-5">Sign Out</a>
+		<a href="{% url 'dashboards:change_password' %}" class="menu-link px-5">Cambiar Contraseña</a>
+	</div>
+	<!--end::Menu item-->
+
+	<!--begin::Menu item-->
+	<div class="menu-item px-5">
+		<a href="{% url 'auth:logout' %}" class="menu-link px-5">Cerrar Sesión</a>
 	</div>
 	<!--end::Menu item-->
 

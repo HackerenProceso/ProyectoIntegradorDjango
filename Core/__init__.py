@@ -4,7 +4,6 @@ from Core.libs.theme import KTTheme
 import importlib.util
 import sys
 
-
 class KTLayout:
     # Initialize the bootstrap files and page layout
     def init(context):
@@ -27,3 +26,4 @@ class KTLayout:
 
         # Return context
         return context
+

@@ -1,0 +1,61 @@
+{% extends layout %}
+
+{% block content %}
+<div class="container">
+    <h1>Tabla de {{ model_name }}</h1>
+
+    <div class="text-right mb-3 d-flex justify-content-between">
+        {% if model_name %}
+            <form action="{% url 'dashboards:model_view' model_name=model_name %}" method="post" id="delete-all-form">
+                {% csrf_token %}
+                <button type="submit" name="delete_all" class="btn btn-danger">Eliminar todos</button>
+            </form>
+            <a href="{% url 'dashboards:add_model' model_name=model_name %}" class="btn btn-primary">Agregar</a>
+        {% else %}
+            <p>No se ha proporcionado un nombre de modelo válido.</p>
+        {% endif %}
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                {% for column_name in column_names %}
+                    <th>{{ column_name }}</th>
+                {% endfor %}
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in model_objects %}
+                <tr>
+                    {% for key, value in obj.items %}
+                        <td>
+                            {% if key == 'nombre' %}
+                                <a href="{% url 'dashboards:edit_model' model_name=model_name id=obj.id %}">{{ value }}</a>
+                            {% elif key == 'imagen' %}
+                                <img src="{{ image_base_url }}{{ value }}" alt="Imagen del Producto" width="50" height="50">
+                            {% elif key == 'imagen_url' %}
+                                <img src="{{ image_base_url }}{{ value }}" alt="Imagen del Producto" width="50" height="50">
+                            {% else %}
+                                {{ value }}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                    <td>
+                        <form action="{% url 'dashboards:model_view' model_name=model_name %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="delete_item_id" value="{{ obj.id }}">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="{{ total_columns }}">No hay datos disponibles</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        
+    </table>
+</div>
+{% endblock %}
