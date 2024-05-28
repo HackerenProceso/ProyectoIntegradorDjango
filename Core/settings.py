@@ -89,15 +89,15 @@ WSGI_APPLICATION = 'Core.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    	'default': {
-   	     'ENGINE': 'django.db.backends.mysql',
-  	      "NAME": 'u248345608_TECSUP',
-  	      "USER": 'u248345608_TECSUPMT',
-  	      "PASSWORD": 'Tecsup.TECSUPMT.18321',
-  	      "HOST": 'srv586.hstgr.io',
-  	      "PORT": '3306',
- 	   }
-	}
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('DB_NAME', 'u248345608_TECSUP'),
+        'USER': os.getenv('DB_USER', 'u248345608_TECSUPMT'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'Tecsup.TECSUPMT.18321'),
+        'HOST': os.getenv('DB_HOST', 'srv586.hstgr.io'),
+        'PORT': os.getenv('DB_PORT', '3306'),
+    }
+}
 
 
 # Password validation
