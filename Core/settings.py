@@ -89,10 +89,10 @@ WSGI_APPLICATION = 'Core.wsgi.application'
 DATABASES = {
     	'default': {
    	     'ENGINE': 'django.db.backends.mysql',
-  	      "NAME": 'mitiendita',
-  	      "USER": 'root',
-  	      "PASSWORD": '',
-  	      "HOST": 'localhost',
+  	      "NAME": 'u248345608_TECSUP',
+  	      "USER": 'u248345608_TECSUPMT',
+  	      "PASSWORD": 'Tecsup.TECSUPMT.18321',
+  	      "HOST": 'srv586.hstgr.io',
   	      "PORT": '3306',
  	   }
 	}
