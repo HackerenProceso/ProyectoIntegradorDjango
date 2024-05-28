@@ -18,8 +18,12 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from Core.views import SystemView
+from dashboards import views as admin_views
 
 urlpatterns = [
+    # Ruta para la página principal de tu aplicacion  
+    path('', admin_views.landing_page, name='landing_page'),
+    
     # Dashboard urls applied to admin 
     path('admin/', include('dashboards.urls')),
     path('admin/', include('auth.urls')),

@@ -15,6 +15,14 @@ from django.views.generic import TemplateView
 from .forms import UserPasswordChangeForm
 from django.contrib import admin
 
+
+"""
+Landing Page Views
+"""
+# Create your views here.
+def landing_page(request):
+    return render(request, 'landing_page.html')
+
 """
 This file is a view controller for multiple pages as a module.
 Here you can override the page view layout.
