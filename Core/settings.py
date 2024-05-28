@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-0y&b@#0b3qym=d$(y77e=z4b%75_r&n@i&gvptufgijgj!un12
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 #ALLOWED_HOSTS = ['127.0.0.1']
-ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'mitiendita.fun,127.0.0.1,0.0.0.0,localhost').split(',')
 
 
 # Application definition
