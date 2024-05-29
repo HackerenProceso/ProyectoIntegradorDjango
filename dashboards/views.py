@@ -14,7 +14,9 @@ from django.contrib import messages
 from django.views.generic import TemplateView
 from .forms import UserPasswordChangeForm
 from django.contrib import admin
-
+from django.utils import timezone
+from .models import Cliente, Orden, Carrito, Producto
+from datetime import datetime, date
 
 """
 Landing Page Views
@@ -56,7 +58,39 @@ class DashboardsView(LoginRequiredMixin, TemplateView):
         # Agregar las listas de modelos al contexto
         context['auth_models'] = auth_models
         context['dashboard_models'] = dashboard_models
+        
+        # Calcular el número de nuevos clientes hoy
+        hoy = timezone.now().date()
+        nuevos_clientes_hoy = Cliente.objects.filter(fecha_de_registro=hoy).count()
 
+        context['nuevos_clientes_hoy'] = nuevos_clientes_hoy
+
+        # Calcular el total de todas las órdenes
+        total_ordenes = Orden.objects.count()
+        context['total_ordenes'] = total_ordenes
+
+        # Calcular el total de carritos de hoy
+        total_carritos_hoy = Carrito.objects.filter(fecha_creacion__date=date.today()).count()
+        context['total_carritos_hoy'] = total_carritos_hoy
+
+        # Calcular el total de órdenes de hoy
+        total_ordenes_hoy = Orden.objects.filter(fecha__date=date.today()).count()
+        context['total_ordenes_hoy'] = total_ordenes_hoy
+       
+        # Obtener el total de productos
+        total_productos = Producto.objects.count()
+        ultimos_productos = Producto.objects.order_by('-id')[:3]
+        # Obtener los últimos 3 productos
+        productos_adicionales  = max(total_productos - 3, 0)
+        # Modificar la URL de la imagen en el contexto
+        for producto in ultimos_productos:
+            producto.imagen_url_without_admin = producto.imagen_url.url.replace('/admin', '')
+
+        context['total_productos'] = total_productos
+        context['ultimos_productos'] = ultimos_productos
+        context['productos_adicionales'] = productos_adicionales
+       
+        
         return context
     
 class UserProfileView(TemplateView):
@@ -71,7 +105,16 @@ class UserProfileView(TemplateView):
 
         # Include vendors and javascript files for dashboard widgets
         KTTheme.addVendors(['amcharts', 'amcharts-maps', 'amcharts-stock'])
+        # Obtener la lista de modelos registrados en el panel de administración
+        modelos = admin.site._registry.keys()
 
+        # Separar los modelos en categorías
+        auth_models = [model.__name__ for model in modelos if model._meta.app_label == 'auth']
+        dashboard_models = [model.__name__ for model in modelos if model._meta.app_label == 'dashboards']
+
+        # Agregar las listas de modelos al contexto
+        context['auth_models'] = auth_models
+        context['dashboard_models'] = dashboard_models
         return context
     
 

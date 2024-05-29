@@ -20,7 +20,125 @@
         <thead>
             <tr>
                 {% for column_name in column_names %}
-                    <th>{{ column_name }}</th>
+                    {% if model_name == "producto" %}
+                        {% if column_name == "nombre" %}
+                            <th>Nombre del Producto</th>                            
+                        {% elif column_name == "precio" %}
+                            <th>Precio</th> 
+                        {% elif column_name == "imagen_url" %}
+                            <th>Imagen</th>
+                        {% elif column_name == "descripcion" %}
+                            <th>Descripción</th> 
+                        {% elif column_name == "stock" %}
+                            <th>Stock</th> 
+                        {% elif column_name == "marca" %}
+                            
+                        {% elif column_name == "categoria" %}
+                             
+                        {% elif column_name == "lote" %}
+                            <th>Lote</th>
+                        {% else %}
+                            <th>{{ column_name }}</th>
+                        {% endif %}
+                    {% elif model_name == "marca" %}
+                        {% if column_name == "id" %}
+                            <th>Id</th>                            
+                        {% elif column_name == "nombre" %}
+                            <th>Nombre </th>                         
+                        {% endif %}
+                    {% elif model_name == "categoria" %}
+                        {% if column_name == "id" %}
+                            <th>Id</th>                            
+                        {% elif column_name == "nombre" %}
+                            <th>Nombre </th>  
+                        {% elif column_name == "descripcion" %}
+                            <th>Descripción </th>                        
+                        {% endif %}
+                    {% elif model_name == "cupon" %}
+                        {% if column_name == "id" %}
+                            <th>Id</th>                            
+                        {% elif column_name == "codigo" %}
+                            <th>Código </th>  
+                        {% elif column_name == "descuento" %}
+                            <th>Descuento </th>        
+                        {% elif column_name == "fecha_expiracion" %}
+                            <th>Fecha de Expiración </th>                  
+                        {% endif %}
+                    {% elif model_name == "cliente" %}
+                        {% if column_name == "id" %}
+                            <th>Id</th>                            
+                        {% elif column_name == "nombre" %}
+                            <th>Nombre </th>  
+                        {% elif column_name == "apellido" %}
+                            <th>Apellido </th>        
+                        {% elif column_name == "email" %}
+                            <th>Email </th>        
+                        {% elif column_name == "username" %}
+                            <th>Nombre de Usuario </th>           
+                        {% elif column_name == "contraseña" %}
+                            <th>Contraseña </th>            
+                        {% elif column_name == "imagen" %}
+                            <th>Imagen </th>              
+                        {% elif column_name == "telefono" %}
+                            <th>Telefono </th>              
+                        {% elif column_name == "direccion" %}
+                            <th>Direccion </th>                
+                        {% elif column_name == "fecha_de_registro" %}
+                            <th>Registro </th>                 
+                        {% elif column_name == "ultimo_login" %}
+                            <th>Login </th>                    
+                        {% endif %}
+                    {% elif model_name == "orden" %}
+                        {% if column_name == "id" %}
+                            <th>Id</th>                            
+                        {% elif column_name == "cliente" %}
+                            <th>Cliente </th>  
+                        {% elif column_name == "fecha" %}
+                            <th>Fecha </th>        
+                        {% elif column_name == "total" %}
+                            <th>Total </th>        
+                        {% endif %}
+                    {% elif model_name == "detalleorden" %}
+                        {% if column_name == "id" %}
+                            <th>Id</th>                            
+                        {% elif column_name == "orden" %}
+                            <th>Orden </th>  
+                        {% elif column_name == "producto" %}
+                            <th>Producto </th>        
+                        {% elif column_name == "cantidad" %}
+                            <th>Cantidad </th>         
+                        {% elif column_name == "precio_unitario" %}
+                            <th>Precio Unitario </th>        
+                        {% elif column_name == "subtotal" %}
+                            <th>Subtotal</th>          
+                        {% endif %}
+                    {% elif model_name == "carrito" %}
+                        {% if column_name == "id" %}
+                            <th>Id</th>                            
+                        {% elif column_name == "cliente" %}
+                            <th>Cliente </th>  
+                        {% elif column_name == "fecha_creacion" %}
+                            <th>Fecha de Creación </th>        
+                        {% elif column_name == "orden_asociada" %}
+                            <th>Orden Asociada </th>        
+                        {% endif %}
+                    {% elif model_name == "detallecarrito" %}
+                        {% if column_name == "id" %}
+                            <th>Id</th>                            
+                        {% elif column_name == "carrito" %}
+                            <th>Carrito </th>  
+                        {% elif column_name == "producto" %}
+                            <th>Producto </th>        
+                        {% elif column_name == "cantidad" %}
+                            <th>Cantidad </th>         
+                        {% elif column_name == "precio_unitario" %}
+                            <th>Precio Unitario </th>        
+                        {% elif column_name == "subtotal" %}
+                            <th>Subtotal</th>          
+                        {% endif %}
+                    {% else %}
+                        <th>{{ column_name }}</th>
+                    {% endif %}
                 {% endfor %}
                 <th>Acciones</th>
             </tr>
@@ -36,6 +154,26 @@
                                 <img src="{{ image_base_url }}{{ value }}" alt="Imagen del Producto" width="50" height="50">
                             {% elif key == 'imagen_url' %}
                                 <img src="{{ image_base_url }}{{ value }}" alt="Imagen del Producto" width="50" height="50">
+                            {% elif model_name == "producto" %}
+                                {% if key == 'precio' %}
+                                    {{ value|floatformat:2 }}
+                                {% elif key == 'descripcion' %}
+                                    {{ value|linebreaks }}
+                                {% elif key == 'stock' %}
+                                    {% if value > 0 %}
+                                        {{ value }}
+                                    {% else %}
+                                        Agotado
+                                    {% endif %}
+                                {% elif key == 'marca' %}
+                                    <em>{{ value }}</em>
+                                {% elif key == 'categoria' %}
+                                    <strong>{{ value }}</strong>
+                                {% elif key == 'lote' %}
+                                    <span>{{ value }}</span>
+                                {% else %}
+                                    {{ value }}
+                                {% endif %}
                             {% else %}
                                 {{ value }}
                             {% endif %}

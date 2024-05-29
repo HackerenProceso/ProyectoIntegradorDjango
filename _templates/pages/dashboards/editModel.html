@@ -9,8 +9,25 @@
             <div class="form-group">
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {% if model_name == 'producto' %}
-                    {% if field.name == 'imagen_url' %}
-                        <input type="file" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control-file">
+                    {% if field.name == 'nombre' %}
+                        <input type="text" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control mb-3" value="{{ field.value }}">
+                    {% elif field.name == 'precio' %}
+                        <input type="text" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control mb-3" value="{{ field.value }}">
+                    {% elif field.name == 'descripcion' %}
+                        <input type="text" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control mb-3" value="{{ field.value }}">
+                    {% elif field.name == 'stock' %}
+                        <input type="number" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control mb-3" value="{{ field.value }}">
+                    {% elif field.name == 'lote' %}
+                        <input type="text" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control mb-3" value="{{ field.value }}">
+                    {% elif field.name == 'imagen_url' %}
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        <input type="file" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control-file mb-3">
+                    {% else %}
+                        {{ field }}
+                    {% endif %}                
+                {% elif model_name == 'marca' %}
+                    {% if field.name == 'nombre' %}
+                        <input type="text" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control mb-3" value="{{ field.value }}">
                     {% else %}
                         {{ field }}
                     {% endif %}

@@ -17,7 +17,7 @@ class Marca(models.Model):
     nombre = models.CharField(max_length=150)
     
     def __str__(self):
-        return f"{self.id}: {self.nombre}"
+        return self.nombre
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=150)
@@ -35,6 +35,9 @@ class Producto(models.Model):
     marca = models.ForeignKey(Marca, on_delete=models.CASCADE)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     lote = models.CharField(max_length=100)  
+    
+    def __str__(self):
+        return self.nombre
 
 class Cupon(models.Model):
     codigo = models.CharField(max_length=8)
