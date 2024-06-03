@@ -19,6 +19,7 @@ from django.urls import include, path
 from django.conf import settings
 from Core.views import SystemView
 from dashboards import views as admin_views
+from django.views.generic import TemplateView
 
 urlpatterns = [
     # Ruta para la página principal de tu aplicacion  
@@ -32,5 +33,5 @@ urlpatterns = [
     path('api/v1/', include('api.urls')),
 ]
 
-handler404 = SystemView.as_view(template_name = 'pages/' + settings.KT_THEME + '/system/not-found.html', status=404)
-handler500 = SystemView.as_view(template_name = 'pages/' + settings.KT_THEME + '/system/error.html', status=500)
+handler404 = SystemView.as_view(template_name = 'pages/'  + '/system/not-found.html', status=404)
+handler500 = SystemView.as_view(template_name = 'pages/'  + '/system/error.html', status=500)
