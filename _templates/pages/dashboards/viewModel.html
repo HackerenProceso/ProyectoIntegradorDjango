@@ -40,6 +40,14 @@
                         {% else %}
                             <th>{{ column_name }}</th>
                         {% endif %}
+                    {% elif model_name == "productoimagen" %}
+                        {% if column_name == "id" %}
+                            <th>Id</th>                              
+                        {% elif column_name == "" %}
+                            <th>Nombre de Producto </th>                      
+                        {% elif column_name == "imagen" %}
+                            <th>Imagen </th>                         
+                        {% endif %}
                     {% elif model_name == "marca" %}
                         {% if column_name == "id" %}
                             <th>Id</th>                            
@@ -67,25 +75,25 @@
                     {% elif model_name == "cliente" %}
                         {% if column_name == "id" %}
                             <th>Id</th>                            
+                        {% elif column_name == "password" %}
+                            <th></th>  
+                        {% elif column_name == "last_login" %}
+                            <th>Ultimo Login </th>        
                         {% elif column_name == "nombre" %}
-                            <th>Nombre </th>  
+                            <th>Nombre </th>        
                         {% elif column_name == "apellido" %}
-                            <th>Apellido </th>        
+                            <th>Apellido </th>           
                         {% elif column_name == "email" %}
-                            <th>Email </th>        
+                            <th>Email </th>            
                         {% elif column_name == "username" %}
-                            <th>Nombre de Usuario </th>           
-                        {% elif column_name == "contraseña" %}
-                            <th>Contraseña </th>            
+                            <th>Username </th>              
                         {% elif column_name == "imagen" %}
                             <th>Imagen </th>              
                         {% elif column_name == "telefono" %}
-                            <th>Telefono </th>              
+                            <th>Telefono </th>                
                         {% elif column_name == "direccion" %}
-                            <th>Direccion </th>                
+                            <th>Direccion </th>                 
                         {% elif column_name == "fecha_de_registro" %}
-                            <th>Registro </th>                 
-                        {% elif column_name == "ultimo_login" %}
                             <th>Login </th>                    
                         {% endif %}
                     {% elif model_name == "orden" %}
@@ -172,6 +180,10 @@
                                 {% elif key == 'lote' %}
                                     <span>{{ value }}</span>
                                 {% else %}
+                                    {{ value }}
+                                {% endif %}
+                            {% elif model_name == "cliente" %}
+                                {% if key != 'password' %}
                                     {{ value }}
                                 {% endif %}
                             {% else %}

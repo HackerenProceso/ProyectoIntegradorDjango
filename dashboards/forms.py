@@ -62,7 +62,11 @@ class UserPasswordChangeForm(PasswordChangeForm):
 
 # forms.py
 from django import forms
-from .models import Perfil, Producto, Marca, Categoria, Cupon, Cliente, Orden, DetalleOrden, Carrito, DetalleCarrito
+from .models import Perfil, Producto, ProductoImagen, Marca, Categoria, Cupon, Cliente, Orden, DetalleOrden, Carrito, DetalleCarrito
+from django import forms
+from multiupload.fields import MultiFileField
+from .models import ProductoImagen
+from django.contrib.auth.hashers import make_password
 
 class perfil(forms.ModelForm):
     class Meta:
@@ -93,12 +97,19 @@ class producto(forms.ModelForm):
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'precio': forms.NumberInput(attrs={'class': 'form-control'}),
-            'imagen_url': forms.FileInput(attrs={'class': 'form-control-file', 'id': 'imagen-input'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'stock': forms.NumberInput(attrs={'class': 'form-control'}),
             'lote': forms.TextInput(attrs={'class': 'form-control'}),
         }
+        
+class productoimagen(forms.ModelForm):
+    producto = forms.ModelChoiceField(queryset=Producto.objects.all(), empty_label=None, required=True, widget=forms.Select(attrs={'class': 'form-control'}))
+    imagenes = MultiFileField(max_num=5, max_file_size=1024*1024, required=False)
 
+    class Meta: 
+        model = ProductoImagen
+        fields = ['producto', 'imagenes']
+ 
 class marca(forms.ModelForm):
     class Meta:
         model = Marca
@@ -130,6 +141,8 @@ class cupon(forms.ModelForm):
         }
 
 class cliente(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Contraseña'}))
+
     class Meta:
         model = Cliente
         fields = '__all__'
@@ -138,13 +151,17 @@ class cliente(forms.ModelForm):
             'apellido': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Apellido'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de usuario'}),
-            'contraseña': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Contraseña'}),
             'imagen': forms.FileInput(attrs={'class': 'form-control-file', 'id': 'imagen-input'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono'}),
             'direccion': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Dirección', 'rows': 3}),
             'fecha_de_registro': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
-            'ultimo_login': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'last_login': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
         }
+
+    def save(self, commit=True):
+        # Guardar la contraseña de forma segura usando make_password
+        self.instance.password = make_password(self.cleaned_data['password'])
+        return super().save(commit=commit)
 
 class orden(forms.ModelForm):
     class Meta:

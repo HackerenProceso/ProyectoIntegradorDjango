@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+# Configuración de Simple JWT
+from datetime import timedelta
 # Cargar variables de entorno desde un archivo .env
 load_dotenv()
 
@@ -32,8 +34,13 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 #ALLOWED_HOSTS = ['127.0.0.1']
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'mitiendita.fun,127.0.0.1,0.0.0.0,localhost,app-a39q2.ondigitalocean.app').split(',')
 
-# Application definition
 
+
+# settings.py
+AUTH_USER_MODEL = 'dashboards.Cliente'
+
+
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,9 +49,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # Keenthemes Apps
+    # Theme
     'dashboards.apps.DashboardsConfig',
     'auth.apps.AuthConfig',
+    
+    #Api
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'api',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +68,63 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #API 
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+# Configuración de CORS
+CORS_ALLOW_ALL_ORIGINS = True  # Permitir acceso desde cualquier origen
+# O permitir solo ciertos orígenes (más seguro)
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",  # Origen de tu aplicación web
+#     "https://your-frontend-domain.com",
+#     "myapp://localhost",  # Origen de tu aplicación móvil
+# ]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'authorization',
+    'content-type',
+    'origin',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+# Configuración de REST framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+}
+
 
 ROOT_URLCONF = 'Core.urls'
 
