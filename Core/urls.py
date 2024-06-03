@@ -27,7 +27,9 @@ urlpatterns = [
     # Dashboard urls applied to admin 
     path('admin/', include('dashboards.urls')),
     path('admin/', include('auth.urls')),
-    #path('admin/', admin.site.urls), 
+    
+    #Api
+    path('api/v1/', include('api.urls')),
 ]
 
 handler404 = SystemView.as_view(template_name = 'pages/' + settings.KT_THEME + '/system/not-found.html', status=404)

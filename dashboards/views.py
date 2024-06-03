@@ -15,7 +15,7 @@ from django.views.generic import TemplateView
 from .forms import UserPasswordChangeForm
 from django.contrib import admin
 from django.utils import timezone
-from .models import Cliente, Orden, Carrito, Producto
+from .models import Cliente, Orden, Carrito, Producto, ProductoImagen
 from datetime import datetime, date
 
 """
@@ -80,14 +80,21 @@ class DashboardsView(LoginRequiredMixin, TemplateView):
         # Obtener el total de productos
         total_productos = Producto.objects.count()
         ultimos_productos = Producto.objects.order_by('-id')[:3]
+        
         # Obtener los últimos 3 productos
         productos_adicionales  = max(total_productos - 3, 0)
+        
         # Modificar la URL de la imagen en el contexto
+        ultimos_productos_con_imagenes = []
         for producto in ultimos_productos:
-            producto.imagen_url_without_admin = producto.imagen_url.url.replace('/admin', '')
+            primera_imagen = producto.imagenes.first() if producto.imagenes.exists() else None
+            ultimos_productos_con_imagenes.append({
+                'producto': producto,
+                'imagen_url': primera_imagen.imagen.url if primera_imagen else 'path/to/default/image.jpg'
+            })
 
         context['total_productos'] = total_productos
-        context['ultimos_productos'] = ultimos_productos
+        context['ultimos_productos'] = ultimos_productos_con_imagenes
         context['productos_adicionales'] = productos_adicionales
        
         
@@ -438,13 +445,23 @@ class AddModelView(View):
         return render(request, 'pages/dashboards/addModel.html', context)
     
     def post(self, request, model_name):
-        form_class = getattr(forms, f'{model_name}')
+        try:
+            form_class = getattr(forms, f'{model_name}')
+        except AttributeError:
+            form_class = forms.producto if model_name == 'producto' else forms.cliente
+
         form = form_class(request.POST, request.FILES)
         if form.is_valid():
+            if model_name == 'productoimagen':
+                # Verificar si el formulario tiene el campo 'producto'
+                producto = form.cleaned_data['producto']
+                imagenes = request.FILES.getlist('imagenes')
+
+                for imagen in imagenes:
+                    ProductoImagen.objects.create(producto=producto, imagen=imagen)
             form.save()
-            # Redirigir a una página de éxito (viewModel.html) pasando el nombre del modelo como contexto
-            context = self.get_context_data(model_name=model_name)  # Obtener el contexto actualizado
-            return render(request, 'pages/dashboards/addModel.html', {'model_name': model_name, **context})
+             # Redirigir a la URL del DashboardsView
+            return redirect('dashboards:index')
         else:
             context = self.get_context_data(model_name=model_name)
             context['form'] = form

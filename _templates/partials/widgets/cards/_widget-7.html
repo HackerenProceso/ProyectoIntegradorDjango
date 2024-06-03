@@ -21,10 +21,10 @@
         <!--end::Title-->
         <!--begin::Users group-->
         <div class="symbol-group symbol-hover flex-nowrap">
-            {% for producto in ultimos_productos %}
-            <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" title="{{ producto.nombre }}">
-				<img src="{{ image_base_url }}{{ producto.imagen_url_without_admin }}" alt="{{ producto.nombre }}">
-			</div>
+            {% for item in ultimos_productos %}
+                <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" title="{{ item.producto.nombre }}">
+                    <img src="{{ item.imagen_url }}" alt="{{ item.producto.nombre }}">
+                </div>
             {% endfor %}
             <a href="#" class="symbol symbol-35px symbol-circle" data-bs-toggle="modal" data-bs-target="#kt_modal_view_users">
                 <span class="symbol-label bg-dark text-gray-500 fs-8 fw-bold">+{{ productos_adicionales }}</span>

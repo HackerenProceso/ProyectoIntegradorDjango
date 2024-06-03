@@ -29,7 +29,6 @@ class Categoria(models.Model):
 class Producto(models.Model):
     nombre = models.CharField(max_length=250)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
-    imagen_url = models.ImageField(upload_to='assets/uploads/clientes', blank=True)
     descripcion = models.TextField()
     stock = models.IntegerField()
     marca = models.ForeignKey(Marca, on_delete=models.CASCADE)
@@ -38,6 +37,13 @@ class Producto(models.Model):
     
     def __str__(self):
         return self.nombre
+
+class ProductoImagen(models.Model):
+    producto = models.ForeignKey(Producto, related_name='imagenes', on_delete=models.CASCADE)
+    imagen = models.ImageField(upload_to='assets/uploads/productos')
+
+    def __str__(self):
+        return f"Imagen for {self.producto.nombre}"
 
 class Cupon(models.Model):
     codigo = models.CharField(max_length=8)
@@ -48,20 +54,44 @@ class Cupon(models.Model):
     def __str__(self):
         return self.codigo
 
-class Cliente(models.Model):
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.db import models
+from django.contrib.auth.hashers import make_password
+
+class ClienteManager(BaseUserManager):
+    def create_cliente(self, email, username, password=None, **extra_fields):
+        """
+        Crea y guarda un usuario con el correo electrónico, nombre de usuario y contraseña proporcionados.
+        """
+        if not email:
+            raise ValueError('El correo electrónico es obligatorio')
+        if not username:
+            raise ValueError('El nombre de usuario es obligatorio')
+        email = self.normalize_email(email)
+        cliente = self.model(email=email, username=username, **extra_fields)
+        if password:
+            cliente.password = make_password(password)
+        cliente.save(using=self._db)
+        return cliente
+
+class Cliente(AbstractBaseUser):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
     username = models.CharField(max_length=150, unique=True)
-    contraseña = models.CharField(max_length=128)
     imagen = models.ImageField(upload_to='assets/uploads/clientes', blank=True)
     telefono = models.CharField(max_length=9)
     direccion = models.TextField()
-    fecha_de_registro = models.DateTimeField(default=timezone.now)
-    ultimo_login = models.DateTimeField(auto_now=True)
+    fecha_de_registro = models.DateTimeField(auto_now_add=True)
+
+    objects = ClienteManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return self.username + "'s Profile"
+
     
 class Orden(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='ordenes')
