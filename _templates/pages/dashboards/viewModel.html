@@ -53,6 +53,8 @@
                             <th>Id</th>                            
                         {% elif column_name == "nombre" %}
                             <th>Nombre </th>                         
+                        {% elif column_name == "imagen" %}
+                            <th>Imagen </th>                         
                         {% endif %}
                     {% elif model_name == "categoria" %}
                         {% if column_name == "id" %}

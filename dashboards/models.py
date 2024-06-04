@@ -15,6 +15,7 @@ class Perfil(models.Model):
 # Create your models here.
 class Marca(models.Model):
     nombre = models.CharField(max_length=150)
+    imagen = models.ImageField(upload_to='assets/uploads/marcas')
     
     def __str__(self):
         return self.nombre
@@ -22,6 +23,7 @@ class Marca(models.Model):
 class Categoria(models.Model):
     nombre = models.CharField(max_length=150)
     descripcion = models.TextField()
+    imagen = models.ImageField(upload_to='assets/uploads/categorias')
     
     def __str__(self):
         return self.nombre
@@ -43,17 +45,8 @@ class ProductoImagen(models.Model):
     imagen = models.ImageField(upload_to='assets/uploads/productos')
 
     def __str__(self):
-        return f"Imagen for {self.producto.nombre}"
-
-class Cupon(models.Model):
-    codigo = models.CharField(max_length=8)
-    descuento = models.DecimalField(max_digits=10, decimal_places=2)
-    fecha_expiracion = models.DateField(null=True, blank=True)
-    usado_por = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
-
-    def __str__(self):
-        return self.codigo
-
+        return f"Imagen for {self.producto.nombre}" 
+    
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.contrib.auth.hashers import make_password
@@ -92,6 +85,14 @@ class Cliente(AbstractBaseUser):
     def __str__(self):
         return self.username + "'s Profile"
 
+class Cupon(models.Model):
+    codigo = models.CharField(max_length=8)
+    descuento = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha_expiracion = models.DateField(null=True, blank=True)
+    cliente_que_lo_uso = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, related_name='cupones_utilizados')
+
+    def __str__(self):
+        return self.codigo    
     
 class Orden(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='ordenes')
