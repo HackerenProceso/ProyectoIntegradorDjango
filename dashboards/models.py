@@ -123,3 +123,17 @@ class DetalleCarrito(models.Model):
     cantidad = models.PositiveIntegerField()
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    
+class Review(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='reviews')
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='reviews')
+    comentario = models.TextField()
+    estrellas = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"Review by {self.cliente.username} for {self.producto.nombre} - {self.estrellas} estrellas"
+
+    def save(self, *args, **kwargs):
+        if self.estrellas < 1 or self.estrellas > 5:
+            raise ValueError("Las estrellas deben estar entre 1 y 5")
+        super().save(*args, **kwargs)

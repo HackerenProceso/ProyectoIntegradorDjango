@@ -1,5 +1,5 @@
 from rest_framework import viewsets, permissions
-from dashboards.models import Cliente, Marca, Categoria, Producto, ProductoImagen, Cupon, Carrito, DetalleCarrito, Orden, DetalleOrden
+from dashboards.models import Cliente, Marca, Categoria, Producto, ProductoImagen, Cupon, Carrito, DetalleCarrito, Orden, DetalleOrden, Review
 from .serializers import ClienteSerializer, MarcaSerializer, CategoriaSerializer, ProductoSerializer, ProductoImagenSerializer, CuponSerializer, CarritoSerializer, DetalleCarritoSerializer, OrdenSerializer, DetalleOrdenSerializer
 
 class ClienteViewSet(viewsets.ModelViewSet):
