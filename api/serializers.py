@@ -1,6 +1,6 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
-from dashboards.models import Cliente, Marca, Categoria, Producto, ProductoImagen, Cupon, Carrito, DetalleCarrito, Orden, DetalleOrden
+from dashboards.models import Cliente, Marca, Categoria, Producto, ProductoImagen, Cupon, Carrito, DetalleCarrito, Orden, DetalleOrden, Review
 
 class ClienteSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
@@ -28,15 +28,28 @@ class CategoriaSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class ProductoSerializer(serializers.ModelSerializer):
+    categoria = CategoriaSerializer()   
+    marca = MarcaSerializer()
+    
     class Meta:
         model = Producto
-        fields = '__all__'      
-
+        fields = '__all__' 
+        
 class ProductoImagenSerializer(serializers.ModelSerializer):
+    producto = ProductoSerializer()
     class Meta:
         model = ProductoImagen
+        fields = '__all__' 
+                
+class ProductoSerializer(serializers.ModelSerializer):
+    categoria = CategoriaSerializer()   
+    marca = MarcaSerializer()
+    imagenes = ProductoImagenSerializer(many=True)
+    
+    class Meta:
+        model = Producto
         fields = '__all__'  
-
+      
 class CuponSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cupon
@@ -64,4 +77,9 @@ class OrdenSerializer(serializers.ModelSerializer):
 class DetalleOrdenSerializer(serializers.ModelSerializer):
     class Meta:
         model = DetalleOrden
+        fields = '__all__'
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
         fields = '__all__'

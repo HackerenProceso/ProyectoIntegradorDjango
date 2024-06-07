@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Perfil, Marca, Categoria, Producto, ProductoImagen, Cupon, Cliente, Orden, DetalleOrden, Carrito, DetalleCarrito
+from .models import Perfil, Marca, Categoria, Producto, ProductoImagen, Cupon, Cliente, Orden, DetalleOrden, Carrito, DetalleCarrito, Review
 
 # Register your models here.
 class MarcaAdmin(admin.ModelAdmin):
@@ -17,3 +17,5 @@ admin.site.register(Orden)
 admin.site.register(DetalleOrden)
 admin.site.register(Carrito)
 admin.site.register(DetalleCarrito)
+admin.site.register(Review)
+

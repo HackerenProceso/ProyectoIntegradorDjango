@@ -62,7 +62,7 @@ class UserPasswordChangeForm(PasswordChangeForm):
 
 # forms.py
 from django import forms
-from .models import Perfil, Producto, ProductoImagen, Marca, Categoria, Cupon, Cliente, Orden, DetalleOrden, Carrito, DetalleCarrito
+from .models import Perfil, Producto, ProductoImagen, Marca, Categoria, Cupon, Cliente, Orden, DetalleOrden, Carrito, DetalleCarrito, Review
 from django import forms
 from multiupload.fields import MultiFileField
 from .models import ProductoImagen
@@ -207,3 +207,17 @@ class detallecarrito(forms.ModelForm):
             'precio_unitario': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': '0.01'}),
             'subtotal': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': '0.01'}),
         }
+
+
+class review(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['producto', 'comentario', 'estrellas']
+        widgets = {
+            'comentario': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
+            'estrellas': forms.NumberInput(attrs={'min': 1, 'max': 5}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(review, self).__init__(*args, **kwargs)
+        self.fields['producto'].empty_label = "Seleccione un producto"
