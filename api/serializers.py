@@ -1,85 +1,108 @@
-from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
-from dashboards.models import Cliente, Marca, Categoria, Producto, ProductoImagen, Cupon, Carrito, DetalleCarrito, Orden, DetalleOrden, Review
+from dashboards.models import Marca, Categoria, Producto, ProductoImagen, Cliente, Cupon, Orden, DetalleOrden, Carrito, DetalleCarrito, Review
 
-class ClienteSerializer(serializers.ModelSerializer):
-    def create(self, validated_data):
-        password = validated_data.pop('password', None)
-        if password:
-            validated_data['password'] = make_password(password)
-        return super().create(validated_data)
-    
+class ProductoImagenSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cliente
+        model = ProductoImagen
         fields = '__all__'
         
-class MarcaSerializer(serializers.ModelSerializer):
-    productos = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    
-    class Meta:
-        model = Marca
-        fields = '__all__'
-        
-class CategoriaSerializer(serializers.ModelSerializer):
-    productos = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    
+    def get_imagen(self, obj):
+        request = self.context.get('request')
+        if request is not None:
+            return request.build_absolute_uri(obj.imagen.url)
+        return obj.imagen.url
+
+# Mostrar Info detallada
+class ALLCategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categoria
         fields = '__all__'
         
-class ProductoSerializer(serializers.ModelSerializer):
-    categoria = CategoriaSerializer()   
-    marca = MarcaSerializer()
+class ALLMarcaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Marca
+        fields = '__all__'
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = '__all__'
+                                
+class SimpleProductoSerializer(serializers.ModelSerializer):
+    categoria = ALLCategoriaSerializer()
+    marca = ALLMarcaSerializer()
+    imagenes = ProductoImagenSerializer(many=True, read_only=True)
     
     class Meta:
         model = Producto
-        fields = '__all__' 
+        fields = '__all__'
         
-class ProductoImagenSerializer(serializers.ModelSerializer):
-    producto = ProductoSerializer()
+# Categorias     
+class CategoriaSerializer(serializers.ModelSerializer):
+    productos = SimpleProductoSerializer(many=True, read_only=True, source='producto_set')
+
     class Meta:
-        model = ProductoImagen
-        fields = '__all__' 
-                
+        model = Categoria
+        fields = '__all__'
+        
+# Marca
+class MarcaSerializer(serializers.ModelSerializer):
+    productos = SimpleProductoSerializer(many=True, read_only=True, source='producto_set')
+    
+    class Meta:
+        model = Marca
+        fields = '__all__'  
+         
+# Mostrar Info detallada en Producto    
+class PCategoriaSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Categoria
+        fields = '__all__'
+        
+class PMarcaSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Marca
+        fields = '__all__'          
+         
+# Productos
 class ProductoSerializer(serializers.ModelSerializer):
-    categoria = CategoriaSerializer()   
-    marca = MarcaSerializer()
-    imagenes = ProductoImagenSerializer(many=True)
+    categoria = PCategoriaSerializer()
+    marca = PMarcaSerializer()
+    imagenes = ProductoImagenSerializer(many=True, read_only=True)
+    reviews = ReviewSerializer(many=True, read_only=True)
     
     class Meta:
         model = Producto
-        fields = '__all__'  
-      
+        fields = '__all__'
+
+class ClienteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cliente
+        fields = '__all__'
+
 class CuponSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cupon
         fields = '__all__'
 
-class CarritoSerializer(serializers.ModelSerializer):
-    detalles = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    
-    class Meta:
-        model = Carrito
-        fields = '__all__'        
-
-class DetalleCarritoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DetalleCarrito
-        fields = '__all__'        
-
 class OrdenSerializer(serializers.ModelSerializer):
-    detalles = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    
     class Meta:
         model = Orden
-        fields = '__all__'        
+        fields = '__all__'
 
 class DetalleOrdenSerializer(serializers.ModelSerializer):
     class Meta:
         model = DetalleOrden
         fields = '__all__'
 
-class ReviewSerializer(serializers.ModelSerializer):
+class CarritoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Review
+        model = Carrito
+        fields = '__all__'
+
+class DetalleCarritoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DetalleCarrito
         fields = '__all__'

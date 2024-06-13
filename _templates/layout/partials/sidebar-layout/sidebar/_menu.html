@@ -30,12 +30,10 @@
             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention">
                 <!--begin:Menu link-->
                 {% for modelo in auth_models %}
-                    {% if modelo == 'User' %}
-                        <a href="{% url 'dashboards:auth_view' modelo|lower %}" class="menu-link">
-                            <span class="menu-icon">{% getIcon 'file' 'fs-2' %}</span>
-                            <span class="menu-title">{{ modelo }}</span>
-                        </a>
-                    {% endif %}
+                    <a href="{% url 'dashboards:auth_view' modelo|lower %}" class="menu-link">
+                        <span class="menu-icon">{% getIcon 'file' 'fs-2' %}</span>
+                        <span class="menu-title">{{ modelo }}</span>
+                    </a>
                 {% endfor %}
                 <!--end:Menu link-->
             </div>

@@ -24,7 +24,8 @@ from django.views.generic import TemplateView
 urlpatterns = [
     # Ruta para la página principal de tu aplicacion  
     path('', admin_views.landing_page, name='landing_page'),
-    
+    #path('admin/', admin.site.urls),
+
     # Dashboard urls applied to admin 
     path('admin/', include('dashboards.urls')),
     path('admin/', include('auth.urls')),

@@ -192,7 +192,7 @@ class carrito(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'cliente': forms.Select(attrs={'class': 'form-control'}),
-            'fecha_creacion': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'creado_en': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
             'orden_asociada': forms.Select(attrs={'class': 'form-control'}),
         }
 
