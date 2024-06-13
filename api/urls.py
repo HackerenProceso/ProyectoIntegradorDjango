@@ -1,26 +1,23 @@
-# urls.py
 from django.urls import path, include
-from rest_framework import routers
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
-from api import views
+from rest_framework.routers import DefaultRouter
+from .views import MarcaViewSet, CategoriaViewSet, ProductoViewSet, ProductoImagenViewSet, ClienteViewSet, CuponViewSet, OrdenViewSet, DetalleOrdenViewSet, CarritoViewSet, DetalleCarritoViewSet, ReviewViewSet
 
-router = routers.DefaultRouter()
-router.register(r'clientes', views.ClienteViewSet)
-router.register(r'marcas', views.MarcaViewSet)
-router.register(r'categorias', views.CategoriaViewSet)
-router.register(r'productos', views.ProductoViewSet)
-router.register(r'imagenesProductos', views.ProductoImagenViewSet)
-router.register(r'cupones', views.CuponViewSet)
-router.register(r'carritos', views.CarritoViewSet)
-router.register(r'detalleCarritos', views.DetalleCarritoViewSet)
-router.register(r'ordenes', views.OrdenViewSet)
-router.register(r'detallesOrdenes', views.DetalleOrdenViewSet)
+router = DefaultRouter()
+router.register(r'marcas', MarcaViewSet)
+router.register(r'categorias', CategoriaViewSet)
+router.register(r'productos', ProductoViewSet)
+router.register(r'producto-imagenes', ProductoImagenViewSet)
+router.register(r'clientes', ClienteViewSet)
+router.register(r'cupones', CuponViewSet)
+router.register(r'ordenes', OrdenViewSet)
+router.register(r'detalles-orden', DetalleOrdenViewSet)
+router.register(r'carritos', CarritoViewSet)
+router.register(r'detalles-carrito', DetalleCarritoViewSet)
+router.register(r'reviews', ReviewViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('productos/search/', ProductoViewSet.as_view({'get': 'search'}), name='producto-search'),
+    path('clientes/login/', ClienteViewSet.as_view({'post': 'login'}), name='cliente-login'),
+    path('clientes/register/', ClienteViewSet.as_view({'post': 'register'}), name='cliente-register'),
 ]

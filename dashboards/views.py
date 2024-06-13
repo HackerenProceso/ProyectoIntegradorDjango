@@ -70,11 +70,11 @@ class DashboardsView(LoginRequiredMixin, TemplateView):
         context['total_ordenes'] = total_ordenes
 
         # Calcular el total de carritos de hoy
-        total_carritos_hoy = Carrito.objects.filter(fecha_creacion__date=date.today()).count()
+        total_carritos_hoy = Carrito.objects.filter(creado_en__date=date.today()).count()
         context['total_carritos_hoy'] = total_carritos_hoy
 
         # Calcular el total de órdenes de hoy
-        total_ordenes_hoy = Orden.objects.filter(fecha__date=date.today()).count()
+        total_ordenes_hoy = Orden.objects.filter(creado_en__date=date.today()).count()
         context['total_ordenes_hoy'] = total_ordenes_hoy
        
         # Obtener el total de productos

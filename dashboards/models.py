@@ -1,6 +1,11 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.db import models
+from django.contrib.auth.hashers import make_password
+
+from django.db import models
 # Create your models here.
 
 class Perfil(models.Model):
@@ -13,6 +18,46 @@ class Perfil(models.Model):
         return self.user.username + "'s Profile"
     
 # Create your models here.
+# Create your models here.
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
+from django.db import models
+from django.contrib.auth.hashers import make_password
+
+class ClienteManager(BaseUserManager):
+    def create_user(self, username, password=None, **extra_fields):
+        if not username:
+            raise ValueError('El username es obligatorio')
+        if not password:
+            raise ValueError('El password es obligatorio')
+        user = self.model(username=username, **extra_fields)
+        user.set_password(password)  # Esta línea encripta la contraseña
+        user.save(using=self._db)
+        return user
+
+class Cliente(AbstractBaseUser, PermissionsMixin):
+    nombre = models.CharField(max_length=30, blank=True, null=True)
+    apellido = models.CharField(max_length=30, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)  # Hacerlo opcional
+    username = models.CharField(max_length=30, unique=True)
+    password = models.CharField(max_length=128)  # Agrega este campo para almacenar la contraseña
+    telefono = models.CharField(max_length=15, blank=True, null=True)
+    direccion = models.TextField(blank=True, null=True)
+    imagen = models.ImageField(upload_to='assets/uploads/clientes', blank=True, null=True)
+    groups = models.ManyToManyField(Group, related_name='clientes', blank=True)  # Hacerlo opcional
+    user_permissions = models.ManyToManyField(Permission, related_name='clientes', blank=True)  # Hacerlo opcional
+    fecha_de_registro = models.DateTimeField(auto_now_add=True)  # Hacerlo opcional
+    
+    objects = ClienteManager()
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = []
+
+    def __str__(self):
+        return self.username
+
+
+   
+#Otros
 class Marca(models.Model):
     nombre = models.CharField(max_length=150)
     imagen = models.ImageField(upload_to='assets/uploads/marcas')
@@ -46,44 +91,6 @@ class ProductoImagen(models.Model):
 
     def __str__(self):
         return f"Imagen for {self.producto.nombre}" 
-    
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.db import models
-from django.contrib.auth.hashers import make_password
-
-class ClienteManager(BaseUserManager):
-    def create_cliente(self, email, username, password=None, **extra_fields):
-        """
-        Crea y guarda un usuario con el correo electrónico, nombre de usuario y contraseña proporcionados.
-        """
-        if not email:
-            raise ValueError('El correo electrónico es obligatorio')
-        if not username:
-            raise ValueError('El nombre de usuario es obligatorio')
-        email = self.normalize_email(email)
-        cliente = self.model(email=email, username=username, **extra_fields)
-        if password:
-            cliente.password = make_password(password)
-        cliente.save(using=self._db)
-        return cliente
-
-class Cliente(AbstractBaseUser):
-    nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    username = models.CharField(max_length=150, unique=True)
-    imagen = models.ImageField(upload_to='assets/uploads/clientes', blank=True)
-    telefono = models.CharField(max_length=9)
-    direccion = models.TextField()
-    fecha_de_registro = models.DateTimeField(auto_now_add=True)
-
-    objects = ClienteManager()
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-
-    def __str__(self):
-        return self.username + "'s Profile"
 
 class Cupon(models.Model):
     codigo = models.CharField(max_length=8)
@@ -93,36 +100,6 @@ class Cupon(models.Model):
 
     def __str__(self):
         return self.codigo    
-    
-class Orden(models.Model):
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='ordenes')
-    fecha = models.DateTimeField(auto_now_add=True)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return f"Orden de {self.cliente.username} - {self.fecha}"
-
-class DetalleOrden(models.Model):
-    orden = models.ForeignKey(Orden, on_delete=models.CASCADE, related_name='detalles')
-    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    cantidad = models.PositiveIntegerField()
-    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
-
-class Carrito(models.Model):
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='carritos')
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    orden_asociada = models.OneToOneField(Orden, on_delete=models.CASCADE, null=True, blank=True, related_name='carrito_asociado')
-
-    def __str__(self):
-        return f"Carrito de {self.cliente.username} - {self.fecha_creacion}"
-
-class DetalleCarrito(models.Model):
-    carrito = models.ForeignKey(Carrito, on_delete=models.CASCADE, related_name='detalles')
-    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    cantidad = models.PositiveIntegerField()
-    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
     
 class Review(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='reviews')
@@ -137,3 +114,51 @@ class Review(models.Model):
         if self.estrellas < 1 or self.estrellas > 5:
             raise ValueError("Las estrellas deben estar entre 1 y 5")
         super().save(*args, **kwargs)
+        
+class Carrito(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # Total del carrito
+
+    def save(self, *args, **kwargs):
+        # Calcula el total sumando los subtotales de todos los elementos en el carrito
+        self.total = sum(elemento.subtotal for elemento in self.elementos.all())
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Carrito de {self.cliente.username}"
+
+class DetalleCarrito(models.Model):
+    carrito = models.ForeignKey(Carrito, related_name='detalles', on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField(default=1)
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)  # Precio del producto
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)  # Subtotal para este elemento
+
+    def save(self, *args, **kwargs):
+        # Calcula el subtotal antes de guardar el elemento del carrito
+        self.subtotal = self.cantidad * self.precio_unitario
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.cantidad}x {self.producto.nombre} en el carrito de {self.carrito.cliente.username}"
+
+class Orden(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2)  # Total de la orden
+    direccion_entrega = models.TextField()
+    estado = models.CharField(max_length=100, default='Completado')
+
+    def __str__(self):
+        return f"Orden de {self.cliente.username} - {self.creado_en}"
+
+class DetalleOrden(models.Model):
+    orden = models.ForeignKey(Orden, related_name='detalles', on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField()
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)  # Precio del producto
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)  # Subtotal para este elemento
+
+    def __str__(self):
+        return f"{self.cantidad}x {self.producto.nombre} en la orden de {self.orden.cliente.username}"
