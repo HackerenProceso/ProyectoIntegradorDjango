@@ -68,12 +68,13 @@ MIDDLEWARE = [
 # Configuración de CORS
 CORS_ALLOW_ALL_ORIGINS = True  # Permitir acceso desde cualquier origen
 # O permitir solo ciertos orígenes (más seguro)
-CORS_ALLOWED_ORIGINS = [
-     "http://localhost:3000", 
-     "http://localhost:9090/",  
- ]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",  # Origen de tu aplicación web
+#     "https://your-frontend-domain.com",
+#     "myapp://localhost",  # Origen de tu aplicación móvil
+# ]
 
-#CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -101,7 +102,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -154,7 +155,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.getenv('DB_NAME', 'u248345608_TECSUP'),
         'USER': os.getenv('DB_USER', 'u248345608_TECSUPMT'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'Tecsup.TECSUPMT.18321'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'Tecsup.FINAL.1234.HOLA'),
         'HOST': os.getenv('DB_HOST', 'srv586.hstgr.io'),
         'PORT': os.getenv('DB_PORT', '3306'),
     }

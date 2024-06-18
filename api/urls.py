@@ -20,4 +20,6 @@ urlpatterns = [
     path('productos/search/', ProductoViewSet.as_view({'get': 'search'}), name='producto-search'),
     path('clientes/login/', ClienteViewSet.as_view({'post': 'login'}), name='cliente-login'),
     path('clientes/register/', ClienteViewSet.as_view({'post': 'register'}), name='cliente-register'),
+    path('carritos/eliminar-carritos/', CarritoViewSet.as_view({'delete': 'eliminar_carritos_por_cliente'}), name='eliminar-carritos-por-cliente'),
+    path('carritos/<int:pk>/marcar-como-pagado/', CarritoViewSet.as_view({'put': 'marcar_como_pagado'}), name='marcar-como-pagado'),
 ]

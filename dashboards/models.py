@@ -118,47 +118,34 @@ class Review(models.Model):
 class Carrito(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     creado_en = models.DateTimeField(auto_now_add=True)
-    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # Total del carrito
-
-    def save(self, *args, **kwargs):
-        # Calcula el total sumando los subtotales de todos los elementos en el carrito
-        self.total = sum(elemento.subtotal for elemento in self.elementos.all())
-        super().save(*args, **kwargs)
+    pagado = models.BooleanField(default=False) 
 
     def __str__(self):
         return f"Carrito de {self.cliente.username}"
+
+class Orden(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2)  # Campo para almacenar el total de la orden
+
+    def __str__(self):
+        return f"Orden de {self.cliente.username} creada el {self.creado_en}"
 
 class DetalleCarrito(models.Model):
     carrito = models.ForeignKey(Carrito, related_name='detalles', on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField(default=1)
-    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)  # Precio del producto
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2)  # Subtotal para este elemento
-
-    def save(self, *args, **kwargs):
-        # Calcula el subtotal antes de guardar el elemento del carrito
-        self.subtotal = self.cantidad * self.precio_unitario
-        super().save(*args, **kwargs)
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f"{self.cantidad}x {self.producto.nombre} en el carrito de {self.carrito.cliente.username}"
 
-class Orden(models.Model):
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    creado_en = models.DateTimeField(auto_now_add=True)
-    total = models.DecimalField(max_digits=10, decimal_places=2)  # Total de la orden
-    direccion_entrega = models.TextField()
-    estado = models.CharField(max_length=100, default='Completado')
-
-    def __str__(self):
-        return f"Orden de {self.cliente.username} - {self.creado_en}"
 
 class DetalleOrden(models.Model):
     orden = models.ForeignKey(Orden, related_name='detalles', on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    cantidad = models.PositiveIntegerField()
-    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)  # Precio del producto
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2)  # Subtotal para este elemento
+    cantidad = models.PositiveIntegerField(default=1)
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f"{self.cantidad}x {self.producto.nombre} en la orden de {self.orden.cliente.username}"
