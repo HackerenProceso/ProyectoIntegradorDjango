@@ -68,13 +68,12 @@ MIDDLEWARE = [
 # Configuración de CORS
 CORS_ALLOW_ALL_ORIGINS = True  # Permitir acceso desde cualquier origen
 # O permitir solo ciertos orígenes (más seguro)
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",  # Origen de tu aplicación web
-#     "https://your-frontend-domain.com",
-#     "myapp://localhost",  # Origen de tu aplicación móvil
-# ]
+CORS_ALLOWED_ORIGINS = [
+     "http://localhost:3000", 
+     "http://localhost:9090/",  
+ ]
 
-CORS_ALLOW_CREDENTIALS = True
+#CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = [
     'DELETE',
