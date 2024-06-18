@@ -86,23 +86,47 @@ class CuponSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cupon
         fields = '__all__'
+#CARRITO
+class DetalleCarritoNameSerializer(serializers.ModelSerializer):
+    producto = serializers.StringRelatedField()  # Muestra el nombre del producto
 
-class OrdenSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Orden
+        model = DetalleCarrito
+        fields = '__all__'
+        
+class DetalleCarritoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DetalleCarrito
         fields = '__all__'
 
+class CarritoSerializer(serializers.ModelSerializer):
+    detalles = DetalleCarritoNameSerializer(many=True, read_only=True, source='detalles.all')
+
+    class Meta:
+        model = Carrito
+        fields = 'id', 'cliente', 'detalles', 'pagado'
+ 
+#ORDEN     
+class DetalleOrdenProductoSerializer(serializers.ModelSerializer):
+    producto = ProductoSerializer()
+    
+    class Meta:
+        model = DetalleOrden
+        fields = '__all__'
+        
 class DetalleOrdenSerializer(serializers.ModelSerializer):
     class Meta:
         model = DetalleOrden
         fields = '__all__'
 
-class CarritoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Carrito
-        fields = '__all__'
+class OrdenProductoSerializer(serializers.ModelSerializer):
+    detalles = DetalleOrdenProductoSerializer(many=True, read_only=True, source='detalles.all')
 
-class DetalleCarritoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DetalleCarrito
+        model = Orden
+        fields = '__all__'
+        
+class OrdenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Orden
         fields = '__all__'
