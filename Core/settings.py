@@ -61,12 +61,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
     #API 
     'corsheaders.middleware.CorsMiddleware',
 ]
 
 # Configuración de CORS
 CORS_ALLOW_ALL_ORIGINS = True  # Permitir acceso desde cualquier origen
+
 # O permitir solo ciertos orígenes (más seguro)
 # CORS_ALLOWED_ORIGINS = [
 #     "http://localhost:3000",  # Origen de tu aplicación web
