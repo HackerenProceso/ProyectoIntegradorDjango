@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibos</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Mi Tiendita</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboards:index' %}">Volver al Panel</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboards:recibos_list' %}">Lista de Recibos</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">Lista de Recibos</h1>
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre de Cliente</th>
+                    <th>Total</th>
+                    <th>Cantidad de Ordenes</th>
+                    <th>Productos</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for recibo in recibos %}
+                <tr>
+                    <td>{{ recibo.id }}</td>
+                    <td>{{ recibo.cliente.username }}</td>
+                    <td>{{ recibo.total }}</td>
+                    <td>{{ recibo.detalles.count }}</td>
+                    <td>
+                        {% for detalle in recibo.detalles.all %}
+                            {{ detalle.producto.nombre }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <a href="{% url 'dashboards:recibo_view' recibo.id %}" class="btn btn-primary btn-sm">Ver</a>
+                        <button class="btn btn-warning enviar-btn" data-recibo-id="{{ recibo.id }}">Enviar a</button>
+                            <div class="correo-form" style="display:none;">
+                                <form method="POST" action="{% url 'dashboards:enviar_correo' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="recibo_id" value="{{ recibo.id }}">
+                                    <div class="form-group mt-2">
+                                        <input type="text" class="form-control" name="emails" placeholder="Ingrese correos" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-success enviar-form">Enviar</button>
+                                </form>
+                            </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.querySelectorAll('.enviar-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var parentRow = this.closest('tr');
+                var correoForm = parentRow.querySelector('.correo-form');
+                if (correoForm.style.display === 'none' || correoForm.style.display === '') {
+                    correoForm.style.display = 'block';
+                } else {
+                    correoForm.style.display = 'none';
+                }
+            });
+        });
+        
+        document.querySelectorAll('.imprimir-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var parentRow = this.closest('tr');
+                var reciboId = parentRow.dataset.reciboId;
+                printRecibo(reciboId);
+            });
+        });
+    </script>
+</body>
+</html>

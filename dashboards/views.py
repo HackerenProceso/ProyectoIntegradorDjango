@@ -17,7 +17,9 @@ from django.contrib import admin
 from django.utils import timezone
 from .models import Cliente, Orden, Carrito, Producto, ProductoImagen
 from datetime import datetime, date
-
+from django.db.models import Sum
+from django.utils import timezone
+from datetime import datetime, timedelta
 """
 Landing Page Views
 """
@@ -59,12 +61,6 @@ class DashboardsView(LoginRequiredMixin, TemplateView):
         context['auth_models'] = auth_models
         context['dashboard_models'] = dashboard_models
         
-        # Calcular el número de nuevos clientes hoy
-        hoy = timezone.now().date()
-        nuevos_clientes_hoy = Cliente.objects.filter(fecha_de_registro=hoy).count()
-
-        context['nuevos_clientes_hoy'] = nuevos_clientes_hoy
-
         # Calcular el total de todas las órdenes
         total_ordenes = Orden.objects.count()
         context['total_ordenes'] = total_ordenes
@@ -92,7 +88,27 @@ class DashboardsView(LoginRequiredMixin, TemplateView):
                 'producto': producto,
                 'imagen_url': primera_imagen.imagen.url if primera_imagen else 'path/to/default/image.jpg'
             })
+            
+        # Calcular el total vendido de todas las órdenes
+        total_vendido = Orden.objects.aggregate(Sum('total'))['total__sum'] or 0
+        
+         # Calcular el total vendido hoy
+        hoy = timezone.now().date()
+        start_of_day = datetime.combine(hoy, datetime.min.time())
+        end_of_day = datetime.combine(hoy, datetime.max.time())
 
+        total_vendido_hoy = Orden.objects.filter(creado_en__range=(start_of_day, end_of_day)).aggregate(Sum('total'))['total__sum'] or 0
+        
+        # Calcular el total de clientes registrados
+        total_clientes = Cliente.objects.count()
+        context['total_clientes'] = total_clientes
+        
+        # Calcular el total de clientes registrados hoy
+        clientes_hoy = Cliente.objects.filter(fecha_de_registro__range=(start_of_day, end_of_day)).count()
+        context['clientes_hoy'] = clientes_hoy
+        
+        context['total_vendido_hoy'] = total_vendido_hoy
+        context['total_vendido'] = total_vendido
         context['total_productos'] = total_productos
         context['ultimos_productos'] = ultimos_productos_con_imagenes
         context['productos_adicionales'] = productos_adicionales
@@ -534,3 +550,85 @@ class EditModelView(View):
         })
 
         return render(request, self.template_name, context)
+
+#Ordenes
+from django.shortcuts import render
+from django.views import View
+from .models import Orden
+
+class ReceiptsListView(View):
+    template_name = 'pages/recibos/recibos_list.html'
+    
+    def get(self, request):
+        recibos = Orden.objects.all()
+        context = {
+            'recibos': recibos
+        }
+        return render(request, self.template_name, context)
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import Orden
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.conf import settings
+from django.http import HttpResponse
+from django.template import Context
+
+class ReciboDetailView(View):
+    template_name = 'pages/recibos/recibo_detail.html'
+
+    def get(self, request, recibo_id):
+        recibo = get_object_or_404(Orden, id=recibo_id)
+        context = {
+            'recibo': recibo
+        }
+        return render(request, self.template_name, context)
+
+@login_required
+def enviar_correo(request):
+    if request.method == 'POST':
+        emails = request.POST.get('emails')  # Cambiar 'email' a 'emails'
+        recibo_id = request.POST.get('recibo_id')
+
+        # Obtener el recibo específico usando el ID
+        recibo = get_object_or_404(Orden, pk=recibo_id)
+
+        # Renderizar el contenido del recibo con los datos específicos
+        html_content = render_to_string('pages/recibos/detalle_recibo_content.html', {'recibo': recibo})
+
+        # Crear el mensaje de correo
+        email_subject = 'Detalle del Recibo'
+        email_body = 'Se adjunta el detalle del recibo.'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        
+        # Dividir la cadena de correos por comas y limpiar espacios en blanco
+        email_list = [email.strip() for email in emails.split(',')]
+        
+        # Enviar el correo a cada destinatario en la lista
+        for email in email_list:
+            email_message = EmailMultiAlternatives(
+                subject=email_subject,
+                body=email_body,
+                from_email=from_email,
+                to=[email]
+            )
+
+            # Agregar el contenido HTML al cuerpo del correo electrónico
+            email_message.attach_alternative(html_content, "text/html")
+
+            try:
+                email_message.send()
+            except Exception as e:
+                # Manejar cualquier error al enviar el correo
+                messages.error(request, f"Error al enviar el correo a {email}: {str(e)}")
+                return redirect('dashboards:recibos_list')
+
+        # Mostrar mensaje de éxito
+        messages.success(request, "Correo enviado correctamente.")
+        return redirect('dashboards:recibos_list')
+    
+    return redirect('dashboards:recibos_list')
