@@ -446,3 +446,17 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
+
+
+from django.core.mail import send_mail
+from django.conf import settings
+
+# Configuración en settings.py
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.hostinger.com'
+EMAIL_PORT = 465  # 587o 465 si usas SSL en lugar de TLS
+EMAIL_USE_TLS = False  # Cambia a False si usas SSL
+EMAIL_USE_SSL = True  # Cambia a True si usas SSL en lugar de TLS
+EMAIL_HOST_USER = 'send@hackerenproceso.com'
+EMAIL_HOST_PASSWORD = 'Teamocascas.18321'
+DEFAULT_FROM_EMAIL = 'send@hackerenproceso.com'

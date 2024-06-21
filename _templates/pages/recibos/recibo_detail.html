@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Recibo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .border-rounded {
+            border: 1px solid #000;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .table td, .table th {
+            border: 1px solid black;
+        }
+        
+        .no-borders .border-rounded {
+            margin-top: 0 !important;
+        }
+        @media print {
+            input, select {
+                border: none !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Mi Tiendita</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboards:index' %}">Volver al Panel</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboards:recibos_list' %}">Lista de Recibos</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container border-rounded">
+        <div class="row mb-3">
+            <div class="col-8 text-left">
+                <h5>ADMINISTRACIÓN</h5>
+                <h4>Mi Tiendita</h4>
+                <p>San Pedro #122</p>
+                <p>CEL. 999959656</p>
+            </div>
+            <div class="col-4 text-center">
+                <h4>2024</h4>
+                <h4>RECIBO N° {{ recibo.id }}</h4>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="propietario"><strong>RECIBI DE:</strong></label>
+                <input type="text" id="propietario" class="form-control" value="{{ recibo.cliente.username }}" readonly>
+            </div>               
+            <div class="col-6">
+                <label for="fecha"><strong>FECHA:</strong></label>
+                <input type="text" id="fecha" class="form-control" value="{{ recibo.creado_en }}" readonly>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="cantidadTexto"><strong>LA CANTIDAD DE:</strong></label>
+                <input type="text" id="cantidadTexto" class="form-control" value="{{ recibo.total }}" readonly>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-6">
+                <label for="medioPago"><strong>MEDIO DE PAGO:</strong></label>
+                <input type="text" id="medioPago" class="form-control" value="Efectivo" readonly>
+            </div>                
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <h5>DETALLES DE LA ORDEN</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>CANTIDAD</th>
+                            <th>PRECIO UNITARIO</th>
+                            <th>PRODUCTO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detalle in recibo.detalles.all %}
+                            <tr>
+                                <td>{{ detalle.cantidad }}</td>
+                                <td>{{ detalle.precio_unitario }}</td>
+                                <td>{{ detalle.producto.nombre }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3">No hay detalles disponibles</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="row mt-3">
+            <div class="col-9"></div>
+            <div class="col-3 text-right">
+                <h5><strong>TOTAL:</strong> S/. {{ recibo.total }}</h5>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" name="html_content" id="html_content">
+    <!-- Botones -->
+    <div class="row mt-3 mb-5">
+        <div class="col-6 text-right">
+            <button type="button" class="btn btn-primary no-print" onclick="window.print()">Imprimir</button>
+        </div>
+        <div class="col-6 text-left">
+            <button id="enviarCorreo" type="button" class="btn btn-info no-print">Enviar a correo</button>
+        </div>
+        <div class="col-12 text-center mt-4 mb-4" id="correoForm" style="display: none;">
+            <form id="correoFormForm" method="POST" action="{% url 'dashboards:enviar_correo' %}">
+                {% csrf_token %}
+                <input type="hidden" name="recibo_id" value="{{ recibo.id }}">
+                <input style="padding: .5rem 1rem; border-radius: 5px;" class="w-25" type="text" name="emails" id="emails" placeholder="Ingrese correos separados por comas" required>
+                <button id="EnviarForm" type="submit" class="btn btn-primary">Enviar</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        document.getElementById('enviarCorreo').onclick = function() {
+            var correoForm = document.getElementById('correoForm');
+            if (correoForm.style.display === 'none' || correoForm.style.display === '') {
+                correoForm.style.display = 'block';
+            } else {
+                correoForm.style.display = 'none';
+            }
+        };
+    
+        document.getElementById('EnviarForm').onclick = function() {
+            var correoForm = document.getElementById('correoForm');
+            if (correoForm.style.display === 'none' || correoForm.style.display === '') {
+                // Aplicar estilos sin bordes a todos los elementos relevantes
+                document.body.classList.add('no-borders');
+                // Actualizar el valor del campo oculto con el HTML actual
+                document.getElementById('html_content').value = document.documentElement.outerHTML;
+                // Desactivar bordes de la tabla
+                document.querySelectorAll('.table td, .table th').forEach(function(element) {
+                    element.style.border = 'none';
+                });
+                // Desactivar bordes de los inputs
+                document.querySelectorAll('input, select').forEach(function(element) {
+                    element.style.border = 'none';
+                });
+                // Desactivar bordes de .border-rounded
+                document.querySelectorAll('.border-rounded').forEach(function(element) {
+                    element.style.border = 'none';
+                });
+            } else {
+                // Remover los estilos sin bordes cuando se oculta el formulario
+                document.body.classList.remove('no-borders');
+            }            
+        };
+    
+        // Aplicar estilos de impresión al hacer clic en el botón de imprimir
+        window.onbeforeprint = function() {
+            document.body.classList.add('no-borders');
+        };
+        
+        // Eliminar los estilos de impresión después de imprimir
+        window.onafterprint = function() {
+            document.body.classList.remove('no-borders');
+        };
+    </script>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

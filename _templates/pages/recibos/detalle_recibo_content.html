@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Recibo</title>
+</head>
+<body style="border: solid 2px black; padding: 1rem; border-radius: 1rem; width: 95%; margin-left: -5px;">
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+        <div style="width: 70%;">
+            <h5 style="margin-bottom: 0;">ADMINISTRACIÓN</h5>
+            <h2 style="margin-top: 0; margin-bottom: 5px;">Mi Tiendita</h4>
+            <h5 style="margin-top: 0; margin-bottom: 5px;">San Pedro #122</p>
+            <h5 style="margin-top: 0;">CEL. 999959656</p>
+        </div>
+        <div style="width: 30%;">
+            <h4>2024</h4>
+                <h4>RECIBO N° {{ recibo.id }}</h4>
+        </div>
+    </div>
+    <div>
+        <label style="margin-right: 3.7rem;" for="propietario"><strong>RECIBI DE:</strong></label>
+        <span id="propietario">{{ recibo.cliente.username }}</span>
+    </div>             
+    <div>
+        <label style="margin-right: 5.1rem;" for="fecha"><strong>FECHA:</strong></label>
+        <span id="fecha">{{ recibo.creado_en }}</span>
+    </div>
+    <div>
+        <label style="margin-right: 1rem;" for="cantidadTexto"><strong>LA CANTIDAD DE:</strong></label>
+        <span id="cantidadTexto">{{ recibo.total }}</span>
+    </div>
+    <div>
+        <label style="margin-right: 1.5rem;" for="medioPago"><strong>MEDIO DE PAGO:</strong></label>
+        <span id="medioPago">Efectivo</span>
+    </div>  
+    <div>
+        <p>DETALLES DE LA ORDEN</p>
+        <table style="border-collapse: collapse; border: 1px solid black; width: 98%;">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid black; padding: 4px; text-align: center;">CANTIDAD</th>
+                    <th style="border: 1px solid black; padding: 4px; text-align: center;">PRECIO UNITARIO</th>
+                    <th style="border: 1px solid black; padding: 4px; text-align: center;">PRODUCTO</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detalle in recibo.detalles.all %}
+                    <tr>
+                        <td style="border: 1px solid black; padding: 4px; text-align: center;">{{ detalle.cantidad }}</td>
+                        <td style="border: 1px solid black; padding: 4px; text-align: center;">{{ detalle.precio_unitario }}</td>
+                        <td style="border: 1px solid black; padding: 4px; text-align: center;">{{ detalle.producto.nombre }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        
+    </div>
+    <div style="text-align: right; margin-right: 2rem">
+        <h4><strong>TOTAL:</strong> S/. {{ recibo.total }}</h5>
+    </div>
+    
+</body>
+</html>

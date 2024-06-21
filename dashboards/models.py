@@ -140,7 +140,6 @@ class DetalleCarrito(models.Model):
     def __str__(self):
         return f"{self.cantidad}x {self.producto.nombre} en el carrito de {self.carrito.cliente.username}"
 
-
 class DetalleOrden(models.Model):
     orden = models.ForeignKey(Orden, related_name='detalles', on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
