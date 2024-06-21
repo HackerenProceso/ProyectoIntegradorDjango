@@ -84,11 +84,18 @@ class DashboardsView(LoginRequiredMixin, TemplateView):
         ultimos_productos_con_imagenes = []
         for producto in ultimos_productos:
             primera_imagen = producto.imagenes.first() if producto.imagenes.exists() else None
+            if primera_imagen and primera_imagen.imagen:
+                try:
+                    imagen_url = primera_imagen.imagen.url
+                except ValueError:
+                    imagen_url = '/Landing/images/risa.jpg'
+            else:
+                imagen_url = '/Landing/images/risa.jpg'
             ultimos_productos_con_imagenes.append({
                 'producto': producto,
-                'imagen_url': primera_imagen.imagen.url if primera_imagen else 'path/to/default/image.jpg'
+                'imagen_url': imagen_url
             })
-            
+                        
         # Calcular el total vendido de todas las órdenes
         total_vendido = Orden.objects.aggregate(Sum('total'))['total__sum'] or 0
         
