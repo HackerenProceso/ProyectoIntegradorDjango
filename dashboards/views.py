@@ -88,9 +88,9 @@ class DashboardsView(LoginRequiredMixin, TemplateView):
                 try:
                     imagen_url = primera_imagen.imagen.url
                 except ValueError:
-                    imagen_url = '/Landing/images/risa.jpg'
+                    imagen_url = '/assets/Landing/images/risa.png'
             else:
-                imagen_url = '/Landing/images/risa.jpg'
+                imagen_url = '/assets/Landing/images/risa.png'
             ultimos_productos_con_imagenes.append({
                 'producto': producto,
                 'imagen_url': imagen_url
