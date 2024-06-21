@@ -20,6 +20,7 @@ from django.conf import settings
 from Core.views import SystemView
 from dashboards import views as admin_views
 from django.views.generic import TemplateView
+from django.conf.urls.static import static
 
 urlpatterns = [
     # Ruta para la página principal de tu aplicacion  
@@ -32,7 +33,8 @@ urlpatterns = [
     
     #Api
     path('api/v1/', include('api.urls')),
-]
+    
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler404 = SystemView.as_view(template_name = 'pages/'  + '/system/not-found.html', status=404)
 handler500 = SystemView.as_view(template_name = 'pages/'  + '/system/error.html', status=500)
