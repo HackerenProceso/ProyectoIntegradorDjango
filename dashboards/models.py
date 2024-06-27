@@ -60,7 +60,7 @@ class Cliente(AbstractBaseUser, PermissionsMixin):
 #Otros
 class Marca(models.Model):
     nombre = models.CharField(max_length=150)
-    imagen = models.ImageField(upload_to='assets/uploads/marcas')
+    imagen = models.ImageField(upload_to='marcas')
     
     def __str__(self):
         return self.nombre
@@ -87,7 +87,7 @@ class Producto(models.Model):
 
 class ProductoImagen(models.Model):
     producto = models.ForeignKey(Producto, related_name='imagenes', on_delete=models.CASCADE)
-    imagen = models.ImageField(upload_to='assets/uploads/productos')
+    imagen = models.ImageField(upload_to='productos')
 
     def __str__(self):
         return f"Imagen for {self.producto.nombre}" 
